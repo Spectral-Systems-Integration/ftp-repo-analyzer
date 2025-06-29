@@ -24,7 +24,13 @@
     
     $ mkdir /mnt/ftp
     $ curlftpfs ftp://ftp.epaaspect6.net /mnt/ftp/ -o 'user=username:password'
-    $ 
+    $ git clone https://github.com/Spectral-Systems-Integration/ftp-repo-analyzer.git
+    $ cd ftp-repo-analyzer/bin/
+    $ python3 ftp_report_askpect.py
+
+    In the directory where you ran the script, you should see outputs (.txt, .png).
+
+    Unmount the FTP server:
     $ fusermount -u /mnt/ftp 
 
 ###### Python/Javascript libraries
