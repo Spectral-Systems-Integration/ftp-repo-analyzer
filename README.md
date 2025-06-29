@@ -1,8 +1,9 @@
 ###### FTP Repository/Server Analyzer 
     
     Python 3 script to analyze files on locally mounted FTP server.
-    Creates histograms of ages of files 9-10 years of age, as well as those 10+ years old.
-    
+    Creates histograms, for each type of file (by extension e.g. .png), of ages of files 9-10 years of age, 
+    as well as those 10+ years old. Also creates corresponding text-files listing those files, sizes in MB,
+    and age (in seconds and years). 
     
     Uses logging.
 
@@ -18,11 +19,13 @@
 
     Please use with Python 3.10.x or higher. 
 
-    First, we must mount a remove FTP server to a local directory path (may need to be root):
+    First, we must mount a remove FTP server to a local directory path (may need to be root).
+    Fill in below as appropriate the FTP username & password. 
+    
     $ mkdir /mnt/ftp
-    $ curlftpfs ftp://ftp.epaaspect6.net /mnt/ftp/ -o 'user=main@epaaspect6.net:N742W!'
-
-![image info](sample_images/wind_dir_google_earth.png)
+    $ curlftpfs ftp://ftp.epaaspect6.net /mnt/ftp/ -o 'user=username:password'
+    $ 
+    $ fusermount -u /mnt/ftp 
 
 ###### Python/Javascript libraries
 
@@ -33,7 +36,7 @@
 
 ###### PYTHON VERSION:
      
-    Supports Python 3.8.x
+    Supports Python 3.10.x+
        
 ###### @author: 
 
