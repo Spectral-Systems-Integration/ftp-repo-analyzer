@@ -5,11 +5,6 @@ import logging
 import sys
 import subprocess
 
-import matplotlib.pyplot as plt
-from matplotlib.pylab import *
-
-# define constants
-# ----------------
 global ROOT_FTP_MOUNT_PATH 
 ROOT_FTP_MOUNT_PATH = '/mnt/ftp'
 SECONDS_YEARS = 31557600
@@ -19,9 +14,6 @@ DEBUG = os.environ.get('DEBUG', '0') != '0'
 THIS_SCRIPT = sys.argv[0]
 USAGE = f'$ python3 {THIS_SCRIPT} <optional|mount_ftp_directory_path'
 
-# set up logging
-# --------------
-ioff()
 logging.basicConfig(stream = sys.stderr,
   level = logging.DEBUG if DEBUG else logging.INFO,
   format  =
@@ -29,6 +21,16 @@ logging.basicConfig(stream = sys.stderr,
       if DEBUG else '[%(asctime)s.%(msecs)03d %(levelname)s] %(message)s',
   datefmt = '%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
+
+global matplotlib 
+matplotlib = False
+try:
+  import matplotlib.pyplot as plt
+  from matplotlib.pylab import *
+  matplotlib = False 
+  logger.info(f'matplotlib found to be installed. Histograms will be created.')
+except ImportError:
+  logger.warn(f'WARNING: matplotlib not installed. Histograms will not be created.')
 
 def get_all_filenames() -> list:
   '''Return list[] of all filenames (full paths) in the mounted
@@ -155,12 +157,16 @@ def create_histograms_for_ftp_records(ftp_file_records: list,
   
     # write out a histogram file
     # --------------------------
-    plt.title(title)
-    plt.hist(file_ages)
-    plt.grid(linewidth = 0.2)
-    plt.xticks(rotation = 45, ha = 'center', fontsize = 5)
-    plt.savefig(outName, dpi = 150)
-    plt.close()
+    if matplotlib:
+      ioff()
+      plt.title(title)
+      plt.hist(file_ages)
+      plt.grid(linewidth = 0.2)
+      plt.xticks(rotation = 45, ha = 'center', fontsize = 5)
+      plt.savefig(outName, dpi = 150)
+      plt.close()
+    else:
+      logger.warn(f'following file: {outName} will not be created as matplotlib not installed.')
 
 def compute_total_disk_usage(ftp_records: list) -> float:
   '''Compute total space from a srt of FTP file records. Return value in GB.
@@ -173,7 +179,9 @@ def main() -> int:
 
   # get single input arg
   # --------------------
+  global matplotlib
   global ROOT_FTP_MOUNT_PATH
+  
   try:
     ROOT_FTP_MOUNT_PATH = sys.argv[1]
     logger.info(f'following ftp mount path passed-in: {ROOT_FTP_MOUNT_PATH}')
@@ -243,6 +251,7 @@ def main() -> int:
   # ----------------------------------------------------
   write_ftp_file_records_to_txt(
           aspect_ftp_server + '.ALL_FILENAMES.txt', filenames_sizes_ages, (0.0, MAX_AGE_YEARS)) 
+  
   # log some basic info.
   # --------------------
   total_disk_usage_mb = compute_total_disk_usage(
